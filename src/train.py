@@ -56,7 +56,7 @@ def train_one(
 
         # GridSearchCV (CV metrics are captured via best_score_)
         cv = StratifiedKFold(n_splits=cv_splits, shuffle=True,
-                                random_state=seed)
+                             random_state=seed)
         grid = GridSearchCV(
             estimator=pipeline,
             param_grid=param_grid,
