@@ -55,7 +55,8 @@ def train_one(
         mlflow.log_param("random_seed", seed)
 
         # GridSearchCV (CV metrics are captured via best_score_)
-        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=seed)
+        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, 
+                            random_state=seed)
         grid = GridSearchCV(
             estimator=pipeline,
             param_grid=param_grid,
@@ -82,7 +83,8 @@ def train_one(
 
         # Save + log artifacts
         run_reports = reports_dir / run_name
-        cm_path = save_confusion_matrix(y, y_pred, run_reports / "confusion_matrix.png")
+        cm_path = save_confusion_matrix(y, y_pred, 
+                                        run_reports / "confusion_matrix.png")
         roc_path = save_roc_curve(y, y_proba, run_reports / "roc_curve.png")
         rep_path = save_classification_report(
             y, y_pred, run_reports / "classification_report.txt"
@@ -107,7 +109,8 @@ def main():
     parser.add_argument(
         "--data-path", type=str, default="data/raw/heart_disease_uci.csv"
     )
-    parser.add_argument("--experiment", type=str, default="Heart Disease Prediction")
+    parser.add_argument("--experiment", type=str, 
+                        default="Heart Disease Prediction")
     parser.add_argument("--cv-splits", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--threshold", type=float, default=0.5)

@@ -11,8 +11,8 @@ from sklearn.impute import SimpleImputer
 
 @dataclass(frozen=True)
 class FeatureSpec:
-    numeric_cols: List[str]
-    categorical_cols: List[str]
+    numeric_cols: list[str]
+    categorical_cols: list[str]
     target_col: str = "target"
 
 

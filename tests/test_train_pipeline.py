@@ -14,7 +14,8 @@ def test_pipeline_fit_predict():
     y = df["target"]
 
     preprocessor = build_preprocessor(spec)
-    pipe = Pipeline([("preprocess", preprocessor), ("model", LogisticRegression())])
+    pipe = Pipeline([("preprocess", preprocessor), 
+                     ("model", LogisticRegression())])
 
     pipe.fit(X, y)
     preds = pipe.predict(X)
