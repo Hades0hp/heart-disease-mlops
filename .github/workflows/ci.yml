@@ -1,0 +1,39 @@
+name: CI Pipeline - Heart Disease MLOps
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test-train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint code
+        run: |
+          flake8 src/ tests/
+
+      - name: Run unit tests
+        run: |
+          pytest tests/
+
+      - name: Train model (CI run)
+        run: |
+          python scripts/download_data.py
+          python -m src.train \
+            --data-path data/raw/heart_disease_uci.csv \
+            --experiment "CI-Heart-Disease"

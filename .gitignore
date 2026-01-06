@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Data
+data/raw/*.csv
+data/processed/
+
+# OS
+.DS_Store
+
+# Docker
+*.log
