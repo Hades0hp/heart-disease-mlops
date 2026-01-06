@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import warnings
-import numpy as np
 
 import mlflow
 import mlflow.sklearn
@@ -16,7 +15,11 @@ from sklearn.ensemble import RandomForestClassifier
 from src.data import load_dataset
 from src.features import infer_feature_spec, build_preprocessor
 from src.evaluate import (
-    compute_metrics, save_confusion_matrix, save_roc_curve, save_classification_report, save_json
+    compute_metrics, 
+    save_confusion_matrix, 
+    save_roc_curve,
+    save_classification_report, 
+    save_json
 )
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -50,7 +53,8 @@ def train_one(
         mlflow.log_param("random_seed", seed)
 
         # GridSearchCV (CV metrics are captured via best_score_)
-        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=seed)
+        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, 
+                             random_state=seed)
         grid = GridSearchCV(
             estimator=pipeline,
             param_grid=param_grid,
@@ -77,11 +81,16 @@ def train_one(
 
         # Save + log artifacts
         run_reports = reports_dir / run_name
-        cm_path = save_confusion_matrix(y, y_pred, run_reports / "confusion_matrix.png")
-        roc_path = save_roc_curve(y, y_proba, run_reports / "roc_curve.png")
-        rep_path = save_classification_report(y, y_pred, run_reports / "classification_report.txt")
-        params_path = save_json(best_params, run_reports / "best_params.json")
-        metrics_path = save_json(metrics, run_reports / "train_metrics.json")
+        cm_path = save_confusion_matrix(y, y_pred, 
+                        run_reports / "confusion_matrix.png")
+        roc_path = save_roc_curve(y, y_proba, 
+                        run_reports / "roc_curve.png")
+        rep_path = save_classification_report(y, y_pred, 
+                        run_reports / "classification_report.txt")
+        params_path = save_json(best_params, 
+                        run_reports / "best_params.json")
+        metrics_path = save_json(metrics, 
+                        run_reports / "train_metrics.json")
 
         mlflow.log_artifact(str(cm_path), artifact_path="plots")
         mlflow.log_artifact(str(roc_path), artifact_path="plots")
@@ -97,8 +106,10 @@ def train_one(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data-path", type=str, default="data/raw/heart_disease_uci.csv")
-    parser.add_argument("--experiment", type=str, default="Heart Disease Prediction")
+    parser.add_argument("--data-path", type=str, 
+                        default="data/raw/heart_disease_uci.csv")
+    parser.add_argument("--experiment", type=str, 
+                        default="Heart Disease Prediction")
     parser.add_argument("--cv-splits", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--threshold", type=float, default=0.5)

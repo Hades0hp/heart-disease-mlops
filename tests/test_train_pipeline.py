@@ -3,6 +3,7 @@ from src.features import infer_feature_spec, build_preprocessor
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 
+
 def test_pipeline_fit_predict():
     df = pd.DataFrame({
         "age": [45, 55, 65, 35],
@@ -24,3 +25,4 @@ def test_pipeline_fit_predict():
     preds = pipe.predict(X)
 
     assert len(preds) == len(y)
+    

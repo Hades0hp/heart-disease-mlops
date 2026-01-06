@@ -2,6 +2,7 @@ import pandas as pd
 import tempfile
 from src.data import load_dataset
 
+
 def test_load_dataset_success():
     df = pd.DataFrame({
         "age": [50, 60],
@@ -15,3 +16,4 @@ def test_load_dataset_success():
 
     assert not loaded.empty
     assert "target" in loaded.columns
+    
