@@ -17,6 +17,7 @@ request_count = defaultdict(int)
 
 app = FastAPI(title="Heart Disease Prediction API")
 
+
 @app.middleware("http")
 async def log_requests(request, call_next):
     start_time = time.time()
@@ -37,6 +38,7 @@ async def log_requests(request, call_next):
 # Load model from file (inside container)
 model = joblib.load("model.pkl")
 
+
 class PatientInput(BaseModel):
     age: float
     sex: int
@@ -52,9 +54,11 @@ class PatientInput(BaseModel):
     ca: int
     thal: int
 
+
 @app.get("/")
 def health():
     return {"status": "ok"}
+
 
 @app.post("/predict")
 def predict(input: PatientInput):
@@ -65,6 +69,7 @@ def predict(input: PatientInput):
         "prediction": prediction,
         "confidence": round(float(proba), 4)
     }
+
 
 @app.get("/metrics")
 def metrics():
