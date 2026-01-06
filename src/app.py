@@ -7,8 +7,7 @@ import time
 from collections import defaultdict
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -34,6 +33,7 @@ async def log_requests(request, call_next):
     )
 
     return response
+
 
 # Load model from file (inside container)
 model = joblib.load("model.pkl")
@@ -65,14 +65,9 @@ def predict(input: PatientInput):
     df = pd.DataFrame([input.dict()])
     proba = model.predict_proba(df)[0][1]
     prediction = int(proba >= 0.5)
-    return {
-        "prediction": prediction,
-        "confidence": round(float(proba), 4)
-    }
+    return {"prediction": prediction, "confidence": round(float(proba), 4)}
 
 
 @app.get("/metrics")
 def metrics():
-    return {
-        "request_count": dict(request_count)
-    }
+    return {"request_count": dict(request_count)}

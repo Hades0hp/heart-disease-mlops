@@ -23,26 +23,34 @@ def infer_feature_spec(df: pd.DataFrame, target_col: str = "target"):
     X = df.drop(columns=[target_col])
     numeric_cols = X.select_dtypes(include=["number"]).columns.tolist()
     categorical_cols = [c for c in X.columns if c not in numeric_cols]
-    return FeatureSpec(numeric_cols=numeric_cols, 
-                       categorical_cols=categorical_cols, 
-                       target_col=target_col)
+    return FeatureSpec(
+        numeric_cols=numeric_cols,
+        categorical_cols=categorical_cols,
+        target_col=target_col,
+    )
 
 
 def build_preprocessor(spec: FeatureSpec) -> ColumnTransformer:
-    """Preprocessor matching notebook intent: 
+    """Preprocessor matching notebook intent:
     impute + scale numeric; impute + onehot categorical."""
-    numeric_pipe = Pipeline([
-        ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", StandardScaler()),
-    ])
+    numeric_pipe = Pipeline(
+        [
+            ("imputer", SimpleImputer(strategy="median")),
+            ("scaler", StandardScaler()),
+        ]
+    )
 
-    categorical_pipe = Pipeline([
-        ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("onehot", OneHotEncoder(handle_unknown="ignore")),
-    ])
+    categorical_pipe = Pipeline(
+        [
+            ("imputer", SimpleImputer(strategy="most_frequent")),
+            ("onehot", OneHotEncoder(handle_unknown="ignore")),
+        ]
+    )
 
-    preprocessor = ColumnTransformer([
-        ("num", numeric_pipe, spec.numeric_cols),
-        ("cat", categorical_pipe, spec.categorical_cols),
-    ])
+    preprocessor = ColumnTransformer(
+        [
+            ("num", numeric_pipe, spec.numeric_cols),
+            ("cat", categorical_pipe, spec.categorical_cols),
+        ]
+    )
     return preprocessor

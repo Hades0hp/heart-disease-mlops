@@ -23,6 +23,8 @@ def load_dataset(csv_path: str | Path) -> pd.DataFrame:
         raise FileNotFoundError(f"Dataset not found at: {csv_path}")
     df = pd.read_csv(csv_path)
     if DEFAULT_TARGET_COL not in df.columns:
-        raise ValueError(f"Expected target column '{DEFAULT_TARGET_COL}' in CSV. \
-                         Found: {list(df.columns)}")
+        raise ValueError(
+            f"Expected target column '{DEFAULT_TARGET_COL}' in CSV. \
+                         Found: {list(df.columns)}"
+        )
     return df

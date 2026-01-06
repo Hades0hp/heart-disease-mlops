@@ -15,11 +15,11 @@ from sklearn.ensemble import RandomForestClassifier
 from src.data import load_dataset
 from src.features import infer_feature_spec, build_preprocessor
 from src.evaluate import (
-    compute_metrics, 
-    save_confusion_matrix, 
+    compute_metrics,
+    save_confusion_matrix,
     save_roc_curve,
-    save_classification_report, 
-    save_json
+    save_classification_report,
+    save_json,
 )
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -41,11 +41,13 @@ def train_one(
     mlflow.set_experiment(experiment)
 
     with mlflow.start_run(run_name=run_name):
-        mlflow.set_tags({
-            "dataset": "Heart Disease UCI",
-            "cv": f"StratifiedKFold(splits={cv_splits})",
-            "threshold": str(threshold),
-        })
+        mlflow.set_tags(
+            {
+                "dataset": "Heart Disease UCI",
+                "cv": f"StratifiedKFold(splits={cv_splits})",
+                "threshold": str(threshold),
+            }
+        )
 
         # Log "static" params describing pipeline
         mlflow.log_param("model", run_name)
@@ -53,8 +55,7 @@ def train_one(
         mlflow.log_param("random_seed", seed)
 
         # GridSearchCV (CV metrics are captured via best_score_)
-        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, 
-                             random_state=seed)
+        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=seed)
         grid = GridSearchCV(
             estimator=pipeline,
             param_grid=param_grid,
@@ -62,7 +63,7 @@ def train_one(
             cv=cv,
             n_jobs=-1,
             refit=True,
-            verbose=0
+            verbose=0,
         )
         grid.fit(X, y)
 
@@ -81,16 +82,13 @@ def train_one(
 
         # Save + log artifacts
         run_reports = reports_dir / run_name
-        cm_path = save_confusion_matrix(y, y_pred, 
-                        run_reports / "confusion_matrix.png")
-        roc_path = save_roc_curve(y, y_proba, 
-                        run_reports / "roc_curve.png")
-        rep_path = save_classification_report(y, y_pred, 
-                        run_reports / "classification_report.txt")
-        params_path = save_json(best_params, 
-                        run_reports / "best_params.json")
-        metrics_path = save_json(metrics, 
-                        run_reports / "train_metrics.json")
+        cm_path = save_confusion_matrix(y, y_pred, run_reports / "confusion_matrix.png")
+        roc_path = save_roc_curve(y, y_proba, run_reports / "roc_curve.png")
+        rep_path = save_classification_report(
+            y, y_pred, run_reports / "classification_report.txt"
+        )
+        params_path = save_json(best_params, run_reports / "best_params.json")
+        metrics_path = save_json(metrics, run_reports / "train_metrics.json")
 
         mlflow.log_artifact(str(cm_path), artifact_path="plots")
         mlflow.log_artifact(str(roc_path), artifact_path="plots")
@@ -106,10 +104,10 @@ def train_one(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data-path", type=str, 
-                        default="data/raw/heart_disease_uci.csv")
-    parser.add_argument("--experiment", type=str, 
-                        default="Heart Disease Prediction")
+    parser.add_argument(
+        "--data-path", type=str, default="data/raw/heart_disease_uci.csv"
+    )
+    parser.add_argument("--experiment", type=str, default="Heart Disease Prediction")
     parser.add_argument("--cv-splits", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--threshold", type=float, default=0.5)
@@ -128,10 +126,12 @@ def main():
 
     # Logistic Regression (tunable C)
     lr = LogisticRegression(max_iter=2000, solver="liblinear")
-    lr_pipe = Pipeline([
-        ("preprocess", preprocessor),
-        ("model", lr),
-    ])
+    lr_pipe = Pipeline(
+        [
+            ("preprocess", preprocessor),
+            ("model", lr),
+        ]
+    )
     lr_grid = {
         "model__C": [0.1, 1.0, 10.0],
         "model__penalty": ["l1", "l2"],
@@ -140,7 +140,8 @@ def main():
     train_one(
         experiment=args.experiment,
         run_name="LogisticRegression",
-        X=X, y=y,
+        X=X,
+        y=y,
         pipeline=lr_pipe,
         param_grid=lr_grid,
         cv_splits=args.cv_splits,
@@ -151,10 +152,12 @@ def main():
 
     # Random Forest
     rf = RandomForestClassifier(random_state=args.seed)
-    rf_pipe = Pipeline([
-        ("preprocess", preprocessor),
-        ("model", rf),
-    ])
+    rf_pipe = Pipeline(
+        [
+            ("preprocess", preprocessor),
+            ("model", rf),
+        ]
+    )
     rf_grid = {
         "model__n_estimators": [200, 400],
         "model__max_depth": [None, 6, 10],
@@ -164,7 +167,8 @@ def main():
     train_one(
         experiment=args.experiment,
         run_name="RandomForest",
-        X=X, y=y,
+        X=X,
+        y=y,
         pipeline=rf_pipe,
         param_grid=rf_grid,
         cv_splits=args.cv_splits,

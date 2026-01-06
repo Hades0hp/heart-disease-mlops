@@ -4,11 +4,7 @@ from src.data import load_dataset
 
 
 def test_load_dataset_success():
-    df = pd.DataFrame({
-        "age": [50, 60],
-        "sex": [1, 0],
-        "target": [1, 0]
-    })
+    df = pd.DataFrame({"age": [50, 60], "sex": [1, 0], "target": [1, 0]})
 
     with tempfile.NamedTemporaryFile(suffix=".csv") as f:
         df.to_csv(f.name, index=False)
@@ -16,4 +12,3 @@ def test_load_dataset_success():
 
     assert not loaded.empty
     assert "target" in loaded.columns
-    
